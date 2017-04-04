@@ -26,36 +26,30 @@ if [[ ! -d /var/empty ]]; then
   mkdir -p /var/empty
 fi
 
-# create the git home dir if it doesn't exist
-if [[ ! -d /data/git ]]; then
-  mkdir -p /data/git
-  chown git:git /data/git
-fi
-
 # create the git log dir if it doesn't exist
-if [[ ! -d /data/git/.gitolite/logs ]]; then
-  mkdir -p /data/git/.gitolite/logs
-  chown -R git:git /data/git
+if [[ ! -d /home/git/.gitolite/logs ]]; then
+  mkdir -p /home/git/.gitolite/logs
+  chown -R git:git /home/git
 fi
 
 # create the git .ssh dir if it doesn't exist
-if [[ ! -d /data/git/.ssh ]]; then
-  mkdir -p /data/git/.ssh
-  touch /data/git/.ssh/authorized_keys
-  chown -R git:git /data/git
+if [[ ! -d /home/git/.ssh ]]; then
+  mkdir -p /home/git/.ssh
+  touch /home/git/.ssh/authorized_keys
+  chown -R git:git /home/git
 fi
 
 # setup gitolite if the admin ssh pub key does not exist else just repair hooks
-if ! grep -qs "# gitolite start" /data/git/.ssh/authorized_keys; then
-  echo "${SSH_KEY}" > "/data/git/${SSH_ADMIN}.pub"
-  chown -R git:git /data/git
-  su git -c "/usr/bin/gitolite setup -pk /data/git/${SSH_ADMIN}.pub"
+if ! grep -qs "# gitolite start" /home/git/.ssh/authorized_keys; then
+  echo "${SSH_KEY}" > "/home/git/${SSH_ADMIN}.pub"
+  chown -R git:git /data/home
+  su git -c "/usr/bin/gitolite setup -pk /home/git/${SSH_ADMIN}.pub"
 fi
 
 # migrate gitolite-shell command in authorized_keys file from debian to alpine
-if grep -qs '/usr/share/gitolite3/gitolite-shell' /data/git/.ssh/authorized_keys; then
-  sed -i -e 's|/usr/share/gitolite3/gitolite-shell|/usr/lib/gitolite/gitolite-shell|g' /data/git/.ssh/authorized_keys
-  chown -R git:git /data/git
+if grep -qs '/usr/share/gitolite3/gitolite-shell' /home/git/.ssh/authorized_keys; then
+  sed -i -e 's|/usr/share/gitolite3/gitolite-shell|/usr/lib/gitolite/gitolite-shell|g' /home/git/.ssh/authorized_keys
+  chown -R git:git /home/git
 fi
 
 echo "Running: $*"

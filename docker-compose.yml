@@ -12,9 +12,13 @@ services:
       - "2222:22"
     volumes:
       - data:/data
+      - home:/home/git
     environment:
       - SSH_KEY="${GITSERVER_SSH_KEY}"
       - SSH_ADMIN="${GITSERVER_SSH_ADMIN}"
 volumes:
   data:
     driver: local
+  home:
+    driver: local
+

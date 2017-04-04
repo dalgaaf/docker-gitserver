@@ -2,7 +2,7 @@ FROM alpine:3.5
 
 # create git user group
 RUN addgroup -S -g 5000 git ;\
-  adduser -S -H -h /data/git -s /bin/sh -G git -D -u 5000 git ;\
+  adduser -S -s /bin/sh -G git -D -u 5000 git ;\
   sed -i -e 's/^git:!:/git:*:/' /etc/shadow
 
 # Install the services
