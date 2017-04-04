@@ -35,15 +35,16 @@ fi
 # create the git .ssh dir if it doesn't exist
 if [[ ! -d /home/git/.ssh ]]; then
   mkdir -p /home/git/.ssh
-  touch /home/git/.ssh/authorized_keys
   chown -R git:git /home/git
+  chmod 700 /home/git/.ssh
 fi
 
 # setup gitolite if the admin ssh pub key does not exist else just repair hooks
 if ! grep -qs "# gitolite start" /home/git/.ssh/authorized_keys; then
   echo "${SSH_KEY}" > "/home/git/${SSH_ADMIN}.pub"
-  chown -R git:git /data/home
+  chown -R git:git /home/git
   su git -c "/usr/bin/gitolite setup -pk /home/git/${SSH_ADMIN}.pub"
+  chmod 644 /home/git/.ssh/authorized_keys
 fi
 
 # migrate gitolite-shell command in authorized_keys file from debian to alpine
