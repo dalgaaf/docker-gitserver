@@ -35,18 +35,27 @@ fi
 # create the git log dir if it doesn't exist
 if [[ ! -d /data/git/.gitolite/logs ]]; then
   mkdir -p /data/git/.gitolite/logs
-  chown -R git:git /data/git/.gitolite
+  chown -R git:git /data/git
+fi
+
+# create the git .ssh dir if it doesn't exist
+if [[ ! -d /data/git/.ssh ]]; then
+  mkdir -p /data/git/.ssh
+  touch /data/git/.ssh/authorized_keys
+  chown -R git:git /data/git
 fi
 
 # setup gitolite if the admin ssh pub key does not exist else just repair hooks
 if ! grep -qs "# gitolite start" /data/git/.ssh/authorized_keys; then
   echo "${SSH_KEY}" > "/data/git/${SSH_ADMIN}.pub"
+  chown -R git:git /data/git
   su git -c "/usr/bin/gitolite setup -pk /data/git/${SSH_ADMIN}.pub"
 fi
 
 # migrate gitolite-shell command in authorized_keys file from debian to alpine
 if grep -qs '/usr/share/gitolite3/gitolite-shell' /data/git/.ssh/authorized_keys; then
   sed -i -e 's|/usr/share/gitolite3/gitolite-shell|/usr/lib/gitolite/gitolite-shell|g' /data/git/.ssh/authorized_keys
+  chown -R git:git /data/git
 fi
 
 echo "Running: $*"
